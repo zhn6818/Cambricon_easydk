@@ -46,8 +46,9 @@ int main(int argc, char **argv) {
   CHECK_GE(FLAGS_repeat_time, 0);
   std::cout << "FLAGS_func_name:" << FLAGS_func_name << std::endl;
   std::string names_file = "/data1/zhn/baojie/name.txt";
+  std::string json_file = "/data1/zhn/baojie/shift.json";
   std::shared_ptr<Classifycation> g_runner =
-      std::make_shared<Classifycation>(FLAGS_model_path, FLAGS_func_name, names_file, 0);
+      std::make_shared<Classifycation>(FLAGS_model_path, FLAGS_func_name, names_file, 0, json_file);
 
   std::cout << "initial success" << std::endl;
   //   std::string img_name1 = "/data1/zhn/resnet18_hanwuji/data/off/103_16001.jpg";
@@ -78,7 +79,7 @@ int main(int argc, char **argv) {
       batch_image.push_back(frame1);
       double t1 = (double)cv::getTickCount();
       std::vector<std::vector<Prediction>> result;
-      
+
       result = g_runner->Classify(batch_image);
       t1 = (double)cv::getTickCount() - t1;
       std::cout << "compute time:    " << t1 * 1000 / cv::getTickFrequency() << "ms " << std::endl;
@@ -86,6 +87,7 @@ int main(int argc, char **argv) {
         std::cout << "label:" << result[g][0].first << std::endl;
         std::cout << "confidence:" << result[g][0].second << std::endl;
       }
+      break;
       cv::waitKey(30);
     }
   }

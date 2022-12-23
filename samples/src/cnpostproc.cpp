@@ -56,7 +56,7 @@ std::vector<std::vector<DetectObject>>  results;
     for (decltype(len) i = 0; i < len; ++i) {
 
 
-      if (data[i] < threshold_) continue;
+      //if (data[i] < threshold_) continue;
       DetectObject obj;
       memset(&obj.bbox, 0, sizeof(BoundingBox));
       obj.label = i;
@@ -131,4 +131,48 @@ vector<vector<DetectObject>> Yolov3Postproc::Postproc(const vector<pair<float*, 
   return results;
 }
 
+vector<vector<DetectObject>> Yolov4Postproc::Postproc(const vector<pair<float*, uint64_t>>& net_outputs,int batch) {
+  vector<vector<DetectObject>> results;
+  
+  float* data = net_outputs[0].first;
+  uint64_t len = net_outputs[0].second;
+  constexpr int box_step = 7;
+  vector<DetectObject> objs;
+  // std::cout<<"len:"<<len<<std::endl;
+  // std::cout << "len:"<<len<<std::endl;
+  // std::cout << "batch:"<<batch<<std::endl;
+  for(int i=0;i<batch;i++)
+  {
+    objs.clear();
+    const int box_num = static_cast<int>(data[0]);
+    //std::cout<<"box_num:"<<box_num<<std::endl;
+    CHECK_LE(static_cast<uint64_t>(64 + box_num * box_step), len);
+
+    for (int bi = 0; bi < box_num; ++bi) {
+      DetectObject obj;
+      obj.label = static_cast<int>(data[64 + bi * box_step + 1]);
+      obj.score = data[64 + bi * box_step + 2];
+      // if (obj.label == 0) continue;
+      if (threshold_ > 0 && obj.score < threshold_) continue;
+      obj.bbox.x = (data[64 + bi * box_step + 3]);
+      obj.bbox.y = (data[64 + bi * box_step + 4]);
+      obj.bbox.width = (data[64 + bi * box_step + 5]) - obj.bbox.x;
+      obj.bbox.height = (data[64 + bi * box_step + 6]) - obj.bbox.y;
+
+      obj.bbox.x = (obj.bbox.x - padl_ratio_) / (1 - padl_ratio_ - padr_ratio_);
+      obj.bbox.y = (obj.bbox.y - padt_ratio_) / (1 - padb_ratio_ - padt_ratio_);
+      obj.bbox.width /= (1 - padl_ratio_ - padr_ratio_);
+      obj.bbox.height /= (1 - padb_ratio_ - padt_ratio_);
+
+      obj.track_id = -1;
+      if (obj.bbox.width <= 0) continue;
+      if (obj.bbox.height <= 0) continue;
+      objs.push_back(obj);
+    }
+    data +=len/batch;
+    results.push_back(objs);
+  }
+  
+  return results;
+}
 }  // namespace edk

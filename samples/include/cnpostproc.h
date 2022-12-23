@@ -102,6 +102,22 @@ class Yolov3Postproc : public CnPostproc {
   float padl_ratio_ = 0, padb_ratio_ = 0, padr_ratio_ = 0, padt_ratio_ = 0;
 };  // class Yolov3Postproc
 
+class Yolov4Postproc : public  Yolov3Postproc
+{
+
+ protected:
+  std::vector<std::vector<DetectObject>> Postproc(const std::vector<std::pair<float*, uint64_t>>& net_outputs,int batch) override;
+
+ private:
+  /*******************************************************************
+   * padl_ratio_: left pad / width in preprocessing.
+   * padb_ratio_: bottom pad / width in preprocessing.
+   * padr_ratio_: right pad / width in preprocrssing.
+   * padt_ratio_: top pad / width in preprocessing.
+   *******************************************************************/
+  float padl_ratio_ = 0, padb_ratio_ = 0, padr_ratio_ = 0, padt_ratio_ = 0;
+};
+
 }  // namespace edk
 
 #endif  // EDK_SAMPLES_CNPOSTPROC_H_

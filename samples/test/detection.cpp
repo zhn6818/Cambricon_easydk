@@ -29,10 +29,11 @@ DEFINE_bool(show, false, "show image");
 DEFINE_bool(save_video, true, "save output to local video file");
 DEFINE_int32(repeat_time, 0, "process repeat time");
 DEFINE_string(data_path, "", "video path");
-//DEFINE_string(model_path, "/data1/wcl/mlu/174/zhn/yolo/suguan/yolov3_4batch4core_simple.cambricon", "infer offline model path");
+// DEFINE_string(model_path, "/data1/wcl/mlu/174/zhn/yolo/suguan/yolov3_4batch4core_simple.cambricon", "infer offline
+// model path");
 // DEFINE_string(model_path, "/data1/zhn/suguan/yolov3_1b4c_simple.cambricon", "infer offline model path");
 DEFINE_string(model_path, "/data1/zhn/suguan/yolov3_4b4c_simple.cambricon", "infer offline model path");
-//DEFINE_string(model_path, "/data1/zhn/headAbandon/yiliuwu_1b4c_simple.cambricon", "infer offline model path");
+// DEFINE_string(model_path, "/data1/zhn/headAbandon/yiliuwu_1b4c_simple.cambricon", "infer offline model path");
 DEFINE_string(label_path, "", "label path");
 DEFINE_string(func_name, "subnet0", "model function name");
 DEFINE_string(track_model_path, "", "track model path");
@@ -40,8 +41,7 @@ DEFINE_string(track_func_name, "subnet0", "track model function name");
 DEFINE_int32(wait_time, 0, "time of one test case");
 DEFINE_string(net_type, "", "neural network type, SSD or YOLOv3");
 
-void preYolov3(cv::Mat& matIn, int iWidth, int iHeight, cv::Mat& out)
-{
+void preYolov3(cv::Mat& matIn, int iWidth, int iHeight, cv::Mat& out) {
   // if(out.empty()){
   //   out = cv::Mat(iHeight, iWidth, CV_8UC3, cv::Scalar::all(0));
   // }
@@ -55,12 +55,10 @@ void preYolov3(cv::Mat& matIn, int iWidth, int iHeight, cv::Mat& out)
   int new_w = imw;
   int new_h = imh;
 
-  if( ((float)w / imw) < ((float)h / imh))
-  {
+  if (((float)w / imw) < ((float)h / imh)) {
     new_w = w;
     new_h = (imh * w) / imw;
-  }else
-  {
+  } else {
     new_h = h;
     new_w = (imw * h) / imh;
   }
@@ -72,8 +70,6 @@ void preYolov3(cv::Mat& matIn, int iWidth, int iHeight, cv::Mat& out)
   mat.copyTo(srcROI);
 
   src.copyTo(out);
-
-
 }
 
 int main(int argc, char** argv) {
@@ -91,13 +87,19 @@ int main(int argc, char** argv) {
 
   std::vector<cv::Mat> batch_image;
   std::vector<cv::Size> vecSize;
-  cv::Mat img1 = cv::imread("/data1/zhn/suguan/testImg/0_50.jpg");
-  cv::Mat img2 = cv::imread("/data1/zhn/suguan/testImg/0_100_out.jpg");
-  cv::Mat img3 = cv::imread("/data1/zhn/suguan/testImg/0_150_out.jpg");
-  cv::Mat img4 = cv::imread("/data1/zhn/suguan/testImg/0_200_out.jpg");
+  cv::Mat img1 = cv::imread("/data1/zhn/zg/test/1_finish-kym-00010.jpg");
+  int h = img1.rows, w = img1.cols;
+  cv::Mat img2;
+  cv::resize(img1, img2, cv::Size(w - 100, h));
+  cv::Mat img3;
+  cv::resize(img1, img3, cv::Size(w, h - 400));
+  cv::Mat img4;
+  cv::resize(img1, img4, cv::Size(w - 300, h - 500));
+  // cv::Mat img2 = cv::imread("/data1/zhn/suguan/testImg/0_100_out.jpg");
+  // cv::Mat img3 = cv::imread("/data1/zhn/suguan/testImg/0_150_out.jpg");
+  // cv::Mat img4 = cv::imread("/data1/zhn/suguan/testImg/0_200_out.jpg");
 
   cv::Size sizeGrunner = g_runner->GetSize();
-
 
   cv::Mat img1_resize;
   preYolov3(img1, sizeGrunner.width, sizeGrunner.height, img1_resize);
@@ -120,7 +122,7 @@ int main(int argc, char** argv) {
   cv::Mat img4_resize;
   preYolov3(img4, sizeGrunner.width, sizeGrunner.height, img4_resize);
   std::cout << "info : " << img4_resize.cols << " " << img4_resize.rows << std::endl;
-   batch_image.push_back(img4_resize);
+  batch_image.push_back(img4_resize);
   vecSize.push_back(cv::Size(img4.cols, img4.rows));
 
   std::vector<std::vector<DetectedObject>> arrDetection;
@@ -129,19 +131,17 @@ int main(int argc, char** argv) {
 
   // for (size_t nn = 0; nn < arrDetection.size(); nn++)
   // {
-  std::string iStr = "/data1/zhn/suguan/testImg/out_" + std::to_string(0) + ".png";
+  std::string iStr = "/data1/zhn/zg/res/out_" + std::to_string(0) + ".png";
   for (size_t nn = 0; nn < arrDetection[0].size(); nn++) {
     cv::Rect rect = arrDetection[0][nn].bounding_box;
     cv::rectangle(img1, rect, cv::Scalar(0, 128, 255), 2);
-    std::string txt =
-    std::to_string(arrDetection[0][nn].object_class) + "_" + std::to_string(arrDetection[0][nn].prob);
-    cv::putText(img1, txt, cv::Point(rect.x, rect.y), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255),
-          3, 8);
-    }
+    std::string txt = std::to_string(arrDetection[0][nn].object_class) + "_" + std::to_string(arrDetection[0][nn].prob);
+    cv::putText(img1, txt, cv::Point(rect.x, rect.y), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 3, 8);
+  }
   // }
   cv::imwrite(iStr, img1);
 
-  iStr = "/data1/zhn/suguan/testImg/out_" + std::to_string(1) + ".png";
+  iStr = "/data1/zhn/zg/res/out_" + std::to_string(1) + ".png";
   for (size_t nn = 0; nn < arrDetection[1].size(); nn++) {
     cv::Rect rect = arrDetection[1][nn].bounding_box;
     cv::rectangle(img2, rect, cv::Scalar(0, 128, 255), 2);
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
   // }
   cv::imwrite(iStr, img2);
 
-  iStr = "/data1/zhn/suguan/testImg/out_" + std::to_string(2) + ".png";
+  iStr = "/data1/zhn/zg/res/out_" + std::to_string(2) + ".png";
   for (size_t nn = 0; nn < arrDetection[2].size(); nn++) {
     cv::Rect rect = arrDetection[2][nn].bounding_box;
     cv::rectangle(img3, rect, cv::Scalar(0, 128, 255), 2);
@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
   // }
   cv::imwrite(iStr, img3);
 
-  iStr = "/data1/zhn/suguan/testImg/out_" + std::to_string(3) + ".png";
+  iStr = "/data1/zhn/zg/res/out_" + std::to_string(3) + ".png";
   for (size_t nn = 0; nn < arrDetection[3].size(); nn++) {
     cv::Rect rect = arrDetection[3][nn].bounding_box;
     cv::rectangle(img4, rect, cv::Scalar(0, 128, 255), 2);
@@ -243,7 +243,7 @@ int main(int argc, char** argv) {
   // video_writer_->release();
 
   return 0;
-  }
+}
 
 // int main(int argc, char** argv) {
 //   gflags::ParseCommandLineFlags(&argc, &argv, true);
@@ -270,7 +270,8 @@ int main(int argc, char** argv) {
 //   //static const cv::Size g_out_video_size = cv::Size(1280, 720);
 //   cv::Size g_out_video_size(capture.get(cv::CAP_PROP_FRAME_WIDTH), capture.get(cv::CAP_PROP_FRAME_HEIGHT));
 //   // writer.open(savename,CV_FOURCC('P','I','M','1'),rate, videoSize);
-//   video_writer_.reset(new cv::VideoWriter(savename, cv::VideoWriter::fourcc('D', 'I', 'V', 'X'), (int)rate, g_out_video_size));
+//   video_writer_.reset(new cv::VideoWriter(savename, cv::VideoWriter::fourcc('D', 'I', 'V', 'X'), (int)rate,
+//   g_out_video_size));
 
 //   // std::string img_name = "/data/wcl/174/wcl/data/suguan/image/JPEGImages/0_950.jpg";
 //   // std::string savename = "/data/models/wcl/data/suguan/image/0_950_out.jpg";
@@ -309,27 +310,22 @@ int main(int argc, char** argv) {
 //     if(arrDetection.size() > 0)
 //     {
 
-    
 //     for(size_t nn = 0 ; nn < arrDetection[0].size(); nn++)
 //     {
 //       cv::Rect rect = arrDetection[0][nn].bounding_box;
 //       cv::rectangle(frame1, rect, cv::Scalar(0, 128, 255), 2);
-//       std::string txt = std::to_string(arrDetection[0][nn].object_class) + "_" + std::to_string(arrDetection[0][nn].prob);
-//       cv::putText(frame1, txt, cv::Point(rect.x, rect.y), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 3, 8);
+//       std::string txt = std::to_string(arrDetection[0][nn].object_class) + "_" +
+//       std::to_string(arrDetection[0][nn].prob); cv::putText(frame1, txt, cv::Point(rect.x, rect.y),
+//       cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 3, 8);
 //     }
 //     }
 //     std::cout << "imwrite frame" << std::endl;
 //     video_writer_->write(frame1);
 //   }
-  
+
 //   video_writer_->release();
-  
+
 //   return 0;
-
-
-
-
-
 
 //   return 0;
 // }

@@ -28,7 +28,8 @@
 
 DEFINE_int32(repeat_time, 0, "process repeat time");
 DEFINE_string(data_path, "/data1/zhn/instanceseg/model_yanwu/img/2_fin-hk-2019-05-24-16h03m46s289.jpg", "video path");
-DEFINE_string(model_path, "/data1/zhn/instanceseg/model_yanwu/cambricion/best_model_b1c4.cambricon", "infer offline model path");
+DEFINE_string(model_path, "/data1/zhn/instanceseg/model_yanwu/cambricion/best_model_b1c4.cambricon",
+              "infer offline model path");
 
 DEFINE_string(func_name, "subnet0", "model function name");
 DEFINE_int32(wait_time, 0, "time of one test case");
@@ -63,37 +64,32 @@ int main(int argc, char** argv) {
   bool isSmoke = false;
   std::vector<std::vector<cv::Point>> contours;
   int binary_pixels = 0;
-  pts = {cv::Point(0, 0), cv::Point(img.cols - 1, 0), cv::Point(img.cols - 1, img.rows - 1),
-         cv::Point(0, img.rows - 1), cv::Point(0, 0)};
+  pts = {cv::Point(0, 0), cv::Point(img.cols - 1, 0), cv::Point(img.cols - 1, img.rows - 1), cv::Point(0, img.rows - 1),
+         cv::Point(0, 0)};
   float smoke_thres = 200;
   std::vector<std::vector<cv::Point>> contours_all;
-  g_runner->processFeat_test(feat, pts, cv::Size(img.cols, img.rows), smoke_thres, contours, isSmoke, binary_pixels, contours_all);
+  g_runner->processFeat_test(feat, pts, cv::Size(img.cols, img.rows), smoke_thres, contours, isSmoke, binary_pixels,
+                             contours_all);
 
   std::cout << "isSmoke: " << isSmoke << std::endl;
 
   std::cout << "coontours size: " << contours.size() << std::endl;
 
-  for (size_t i = 0; i < contours.size(); i++)
-  {
+  for (size_t i = 0; i < contours.size(); i++) {
     cv::polylines(img2, contours[i], false, cv::Scalar(0, 255, 0), 2);
   }
-  for (size_t i = 0; i < contours_all.size(); i++)
-  {
+  for (size_t i = 0; i < contours_all.size(); i++) {
     cv::polylines(img2, contours_all[i], false, cv::Scalar(0, 0, 255), 2);
   }
 
-  
-
-
   // std::vector<cv::Mat> tt = g_runner->segment(vBatch);
-//   std::cout << "out size: " << tt.size() << std::endl;
+  //   std::cout << "out size: " << tt.size() << std::endl;
 
   // cv::Mat result;
   // tt[0].convertTo(result, CV_8UC1, 255);
 
   cv::imwrite("/data1/zhn/instanceseg/test.png", feat);
   cv::imwrite("/data1/zhn/instanceseg/img.png", img2);
-
 
   return 0;
 }

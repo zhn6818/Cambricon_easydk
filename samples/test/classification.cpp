@@ -20,21 +20,20 @@
 
 #include <gflags/gflags.h>
 #include <glog/logging.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #include <csignal>
 #include <future>
 #include <iostream>
 #include <memory>
-#include <utility>
-#include <opencv2/opencv.hpp>
+#include <mutex>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <mutex>
+#include <opencv2/opencv.hpp>
 #include <string>
+#include <utility>
 #include <vector>
-#include "device/mlu_context.h"
-#include "inference.h"
 
 #include "cnpostproc.h"
 #include "device/mlu_context.h"
@@ -44,7 +43,7 @@
 #include "easyinfer/mlu_memory_op.h"
 #include "easyinfer/model_loader.h"
 #include "easytrack/easy_track.h"
-#include <sys/time.h>
+#include "inference.h"
 DEFINE_int32(repeat_time, 0, "process repeat time");
 DEFINE_string(data_path, "", "video path");
 DEFINE_string(model_path, "", "infer offline model path");
@@ -52,8 +51,7 @@ DEFINE_string(model_path, "", "infer offline model path");
 DEFINE_string(func_name, "subnet0", "model function name");
 DEFINE_int32(wait_time, 0, "time of one test case");
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   // check params
@@ -65,7 +63,8 @@ int main(int argc, char **argv)
   CHECK_GE(FLAGS_repeat_time, 0);
   std::cout << "FLAGS_func_name:" << FLAGS_func_name << std::endl;
   std::string names_file = "/data/zhn/libc/names.txt";
-  std::shared_ptr<ClassificationRunner> g_runner = std::make_shared<ClassificationRunner>(FLAGS_model_path, FLAGS_func_name, names_file, 0);
+  std::shared_ptr<ClassificationRunner> g_runner =
+      std::make_shared<ClassificationRunner>(FLAGS_model_path, FLAGS_func_name, names_file, 0);
 
   std::cout << "initial success" << std::endl;
 
@@ -77,8 +76,7 @@ int main(int argc, char **argv)
   std::vector<std::vector<Prediction>> result;
   result = g_runner->Classify(batch_image, 1);
 
-  for (int g = 0; g < 1; ++g)
-  {
+  for (int g = 0; g < 1; ++g) {
     std::cout << "label:" << result[g][0].first << std::endl;
     std::cout << "confidence:" << result[g][0].second << std::endl;
   }

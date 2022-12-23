@@ -25,7 +25,15 @@ set(OpenCV_lib
   /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_imgproc.so
   /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_highgui.so
   /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_core.so
-
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_imgcodecs.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_videoio.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_video.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_dnn.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_tracking.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_calib3d.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_features2d.so
+  /data1/wcl/mlu/174/wcl/usr/usr/libs/opencv_400/libopencv_shape.so
+  /data1/zhn/soft/json/libjsoncpp.so.1
   # /data/wcl/174/wcl/usr/usr/libs/opencv_400/libopencv_imgproc.so
   # /data/wcl/174/wcl/usr/usr/libs/opencv_400/libopencv_highgui.so
   # /data/wcl/174/wcl/usr/usr/libs/opencv_400/libopencv_core.so
@@ -38,6 +46,7 @@ set(OpenCV_include
   /data1/wcl/mlu/174/wcl/usr/usr/include/opencv2
   /data1/wcl/mlu/174/wcl/usr/usr/include
   /data1/wcl/mlu/174/wcl/usr/usr/include/opencv
+  /data1/zhn/soft/json/
 # /data/wcl/174/wcl/usr/usr/include/opencv2
 # /data/wcl/174/wcl/usr/usr/include/
 # /data/wcl/174/wcl/usr/usr/include/opencv 
@@ -49,8 +58,8 @@ set(OpenCV_include
 
 list(APPEND Samples_INCLUDE_DIRS ${OpenCV_include})
 list(APPEND Samples_LINK_LIBS ${OpenCV_lib})
-message("222222222222",${Samples_LINK_LIBS})
-message("222222222222",${Samples_INCLUDE_DIRS})
+# message("222222222222",${Samples_LINK_LIBS})
+# message("222222222222",${Samples_INCLUDE_DIRS})
 # ---[ thread
 list(APPEND Samples_LINK_LIBS pthread dl)
 # message("333333333333",${dl})
@@ -66,7 +75,7 @@ add_library(cnrtinfer SHARED  ${SOURCE_FILES} )
 target_link_libraries(cnrtinfer easydk ${Samples_LINK_LIBS})
 
 
-message("5555555555",${Samples_LINK_LIBS})
+# message("5555555555",${Samples_LINK_LIBS})
 install(TARGETS cnrtinfer
 DESTINATION lib)
 install(DIRECTORY include
